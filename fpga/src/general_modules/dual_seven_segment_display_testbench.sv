@@ -9,6 +9,8 @@ module dual_seven_seg_testbench();
 	logic [31:0] vector_num, errors;
 	logic [10:0] testvectors[10000:0];
 
+	logic	display1_select, display2_select;
+
 	// dut signals
     logic[3:0]  s;
     logic[2:0]  led;
@@ -19,7 +21,7 @@ module dual_seven_seg_testbench();
 		clk=1; #5; clk=0; #5;
 	end
 
-	dual_seven_segment_display dut(.clk, .reset, .update_value(clk), .value(s), .display(seg));
+	dual_seven_segment_display dut(.clk, .reset, .update_value(clk), .value(s), .display(seg), .display1_select, .display2_select);
 		
 	// at start of test, load vectors and pulse reset
 	initial begin

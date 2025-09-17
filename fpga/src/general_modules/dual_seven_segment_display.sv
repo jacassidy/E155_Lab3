@@ -7,7 +7,9 @@ module dual_seven_segment_display(
     input   logic       reset,
     input   logic       update_value,
     input   logic[3:0]  value,
-    output  logic[6:0]  display
+    output  logic[6:0]  display,
+    output  logic       display1_select,
+    output  logic       display2_select
 );
 
     logic[3:0]      display1_value, display2_value, display_output_value;
