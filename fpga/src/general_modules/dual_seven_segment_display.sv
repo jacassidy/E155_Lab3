@@ -1,11 +1,15 @@
 // James Kaden Cassidy kacassidy@hmc.edu 9/14/2025
 
+// module to display two values on a seven segment display based on a value clock feeding mechanism
+
 module dual_seven_segment_display(
     input   logic       clk,
+    input   logic       reset,
     input   logic       update_value,
     input   logic[3:0]  value,
     output  logic[6:0]  display
 );
+
     logic[3:0]      display1_value, display2_value, display_output_value;
 
     //// --------- value saving logic --------- ////
@@ -20,6 +24,7 @@ module dual_seven_segment_display(
         end
     end
 
+
     //// --------- segment display logic --------- ////
     assign display_output_select = clk;
  
@@ -30,6 +35,5 @@ module dual_seven_segment_display(
 
     // single display controller for both displays
     seven_segment_display Display_Controller(.value(display_output_value), .segments(display));
-
 
 endmodule
