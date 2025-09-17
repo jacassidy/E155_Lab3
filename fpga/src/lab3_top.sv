@@ -25,7 +25,7 @@ module lab3_top(
 
     //// --------- value saving and displaying logic --------- ////
 
-    clock_divider #(.div_count(4000000)) Clock_Divider(.clk(clk), .reset, .clk_divided(display_clk));
+    clock_divider #(.div_count(100000)) Clock_Divider(.clk(clk), .reset, .clk_divided(display_clk));
 
     dual_seven_segment_display Dual_Seven_Seg_Display(.clk(display_clk), .reset, .update_value(new_value), .value(pressed_value), .display);
 
