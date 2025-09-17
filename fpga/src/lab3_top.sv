@@ -1,7 +1,7 @@
 // James Kaden Cassidy kacassidy@hmc.edu    9/12/2025
 
 module lab3_top(
-    input   logic       reset,
+    input   logic       rst_inv,
     input   logic[3:0]  keypad_row,
     output  logic[3:0]  keypad_column,
     output  logic[2:0]  debug_led,
@@ -10,11 +10,13 @@ module lab3_top(
     output  logic[6:0]  display,
     input   logic       new_value_debug
 );
-    logic           clk;
+    logic           clk, reset;
     logic           display_clk;
 
     logic           new_value;
     logic[3:0]      pressed_value;
+
+    assign          reset = ~rst_inv;
 
     HSOSC #(.CLKHF_DIV(2'b01)) hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
 
