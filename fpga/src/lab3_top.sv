@@ -23,7 +23,7 @@ module lab3_top(
     //// --------- scan for pressed switch and debounce --------- ////
 
     keypad_scanner #(.row_div_count(1000), .column_div_count(8), .debounce_delay(100000)) 
-        Keypad_Scanner(.clk, .reset, .keypad_row, .keypad_column, .pressed_value, .new_value);
+        Keypad_Scanner(.clk, .reset, .keypad_row, .keypad_column, .decoded_pressed_value(pressed_value), .new_value);
 
     //// --------- value saving and displaying logic --------- ////
 

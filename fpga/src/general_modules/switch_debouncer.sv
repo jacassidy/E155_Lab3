@@ -13,6 +13,7 @@ module switch_debouncer #(parameter debounce_delay) (
     // Debounce Value
 
     always_ff @ (posedge clk) begin
+        // if (reset)
         if      (raw_input)  debounced_value <= 1'b1;
         else if (debounced_input_low) debounced_value <= 1'b0;
     end

@@ -7,14 +7,14 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
     input   logic       reset,
     input   logic[3:0]  keypad_row,
     output  logic[3:0]  keypad_column,
-    output  logic[3:0]  pressed_value,
+    output  logic[3:0]  decoded_pressed_value,
     output  logic       new_value
 );
     logic       row_clk, column_clk;
     logic       synchronized_value;
     logic       scanning;
     logic[1:0]  target_row, target_column;
-    logic[3:0]  sync_pressed1, sync_pressed2;
+    logic[3:0]  pressed_value;
 
     //// --------- scan for pressed switch --------- ////
 
@@ -54,6 +54,30 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
     assign new_value    = debounced_value;
 
     //// --------- make sure pressed value is synced --------- ////
+
+    always_comb begin
+        case(pressed_value)
+            4'h0: decoded_pressed_value = 4'hf;
+            4'h1: decoded_pressed_value = 4'hb;
+            4'h2: decoded_pressed_value = 4'h0;
+            4'h3: decoded_pressed_value = 4'ha;
+            4'h4: decoded_pressed_value = 4'he;
+            4'h5: decoded_pressed_value = 4'h9;
+            4'h6: decoded_pressed_value = 4'h8;
+            4'h7: decoded_pressed_value = 4'h7;
+            4'h8: decoded_pressed_value = 4'hd;
+            4'h9: decoded_pressed_value = 4'h6;
+            4'ha: decoded_pressed_value = 4'h5;
+            4'hb: decoded_pressed_value = 4'h4;
+            4'hc: decoded_pressed_value = 4'hc;
+            4'hd: decoded_pressed_value = 4'h3;
+            4'he: decoded_pressed_value = 4'h2;
+            4'hf: decoded_pressed_value = 4'h1;
+            default : decoded_pressed_value = 4'b0;
+        endcase
+    end
+
+    // assign decoded_pressed_value = pressed_value;
 
     synchronizer #(.bits(4)) Synchronize_value(.clk, .raw_input({target_column, target_row}), .synchronized_value(pressed_value));
 
