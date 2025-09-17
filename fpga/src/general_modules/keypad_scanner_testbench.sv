@@ -7,7 +7,7 @@ module keypad_testbench();
     logic clk, reset;
 	logic result;
 	logic [31:0] vector_num, errors;
-	logic [10:0] testvectors[10000:0];
+	logic [4:0] testvectors[10000:0];
 
     tri [3:0] row_bus;   // goes into DUT .keypad_row
     tri [3:0] col_bus;   // driven by DUT .keypad_column (TB never drives this)
@@ -59,12 +59,12 @@ module keypad_testbench();
 		
 	// at start of test, load vectors and pulse reset
 	initial begin
-		testvectors[0]  = 11'b0000_0000001;
+		$readmemb("../src/general_modules/keypad_scanner_testvectors.tv", testvectors);
 		
 		//Reset Values
-		vector_num = 0; errors = 0; reset = 1; 
+		vector_num = 2; errors = 0; reset = 1; 
 		
-		#512; //Wait to reset
+		#507; //Wait to reset
 		
 		reset = 0; //Begin
 	end
@@ -75,33 +75,51 @@ module keypad_testbench();
         target_button = vector_num / 100;
         button = 16'h0000;
         button[target_button] = ((vector_num%100 >= 48) & (vector_num%100 < 62));
-    end
 
-	// always @ (posedge clk) begin
-	// 	{s, expected_seg} = testvectors[vector_num];
-	// end
+        {expected_new_value, expected_pressed_value} = testvectors[vector_num];
+    end
+//     int fd;
+//     // Monitor for condition and dump array when met
+//   always @(negedge clk)begin
+//     if(target_button == 16) begin
+
+//         // open file
+//         fd = $fopen("array_output.txt", "w");
+//         if (fd == 0) $fatal("Failed to open file.");
+
+//         // dump array with line breaks
+//         for (int i = 0; i <= 2000; i++) begin
+//             $fdisplay(fd, "%b", testvectors[i]);
+//         end
+
+//         $fclose(fd);
+//         $display("Array written to array_output.txt at time %0t", $time);
+//         $stop;
+//     end
+//   end
+
 		
 	// check results on falling edge of clk
 	always @(negedge clk)
 		if (~reset) begin // skip during reset
-
-            $display("testvectors[%d] = 5'b%b_%b; // button = %d", vector_num, new_value, pressed_value, target_button);
+            // testvectors[vector_num] = {new_value, pressed_value};
+            // $display("testvectors[%d] = 5'b%b_%b; // button = %d", vector_num, new_value, pressed_value, target_button);
 
 			//No more instructions
-			// if (expected_seg === 7'bxxxxxxx) begin
-			// 	$display("Total test cases %d", vector_num);
-			// 	$display("Total errors %d", errors);
-			// 	$stop;
-			// end
+			if (expected_pressed_value === 4'bxxxx) begin
+				$display("Total test cases %d", vector_num);
+				$display("Total errors %d", errors);
+				$stop;
+			end
 
 			//Check if correct result was computed
-			// if (expected_seg === seg) begin
-			// 	result = 1'b1;
-			// end else begin
-			// 	$display("Error on vector %d, %b (%b expected)", vector_num, seg, expected_seg);
-			// 	result = 1'b0;
-			// 	errors = errors + 1;
-			// end
+			if (expected_new_value == new_value & expected_pressed_value == pressed_value) begin
+				result = 1'b1;
+			end else begin
+				$display("Error on vector %d, %b (%b expected)", vector_num, pressed_value, expected_pressed_value);
+				result = 1'b0;
+				errors = errors + 1;
+			end
 			
 			//next test
 			vector_num = vector_num + 1;

@@ -21,12 +21,12 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
     clock_divider #(.div_count(row_div_count))    Clock_Divider1(.clk(clk),     .reset, .clk_divided(row_clk));
     clock_divider #(.div_count(column_div_count)) Clock_Divider2(.clk(row_clk), .reset, .clk_divided(column_clk));
 
-    always_ff @ (posedge row_clk) begin
+    always_ff @ (posedge row_clk, reset) begin
         if (reset)                      target_row = 4'b0;
         else if(scanning)     target_row = target_row + 1;
     end
 
-    always_ff @ (posedge column_clk) begin
+    always_ff @ (posedge column_clk, reset) begin
         if (reset)                       target_column = 4'b0;
         else if(scanning)   target_column = target_column + 1;
     end
@@ -46,7 +46,7 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
     synchronizer Synchronizer (clk, ~keypad_row[target_row], synchronized_value);
 
     // debounce individual switch
-    switch_debouncer #(debounce_delay) Switch_Debouncer(clk, synchronized_value, debounced_value);
+    switch_debouncer #(debounce_delay) Switch_Debouncer(clk, reset, synchronized_value, debounced_value);
 
     //// --------- stop scanning and assign new value --------- ////
 
@@ -76,8 +76,6 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
             default : decoded_pressed_value = 4'b0;
         endcase
     end
-
-    // assign decoded_pressed_value = pressed_value;
 
     synchronizer #(.bits(4)) Synchronize_value(.clk, .raw_input({target_column, target_row}), .synchronized_value(pressed_value));
 
