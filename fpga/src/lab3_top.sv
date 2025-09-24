@@ -4,11 +4,12 @@ module lab3_top(
     input   logic       rst_inv,
     input   logic[3:0]  keypad_row,
     output  logic[3:0]  keypad_column,
-    output  logic[2:0]  debug_led,
+    output  logic[1:0]  debug_led,
     output  logic       display1_select,
     output  logic       display2_select,
     output  logic[6:0]  display,
-    input   logic       new_value_debug
+    input   logic       new_value_debug,
+	output  logic       pressed
 );
     logic           clk, reset;
     logic           display_clk;
@@ -33,13 +34,15 @@ module lab3_top(
 
     // Testing and debugging
 
-    logic[2:0] count;
+    logic[1:0] count;
 
-    always_ff @ (posedge new_value, new_value_debug) begin
+    always_ff @ (posedge new_value) begin
         if (reset)  count = 0;
         else        count = count + 1;
     end
 
     assign debug_led = count;
+	
+	assign pressed = new_value;
 
 endmodule

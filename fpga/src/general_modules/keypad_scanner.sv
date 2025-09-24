@@ -33,17 +33,21 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
 
     // scan by column
     always_comb begin
-        case(target_column)
-            2'b00: keypad_column = 4'b1110;
-            2'b01: keypad_column = 4'b1101;
-            2'b10: keypad_column = 4'b1011;
-            2'b11: keypad_column = 4'b0111;
-            default: keypad_column = 4'b1111;
-        endcase
+        // if(scanning) begin
+            case(target_column)
+                2'b00: keypad_column = 4'b1110;
+                2'b01: keypad_column = 4'b1101;
+                2'b10: keypad_column = 4'b1011;
+                2'b11: keypad_column = 4'b0111;
+                default: keypad_column = 4'b0000;
+            endcase
+        // end else begin
+        //     keypad_column = 4'b1111;
+        // end
     end
 
     // synchronize value
-    synchronizer Synchronizer (clk, ~keypad_row[target_row], synchronized_value);
+    synchronizer Synchronizer (clk, keypad_row[target_row], synchronized_value);
 
     // debounce individual switch
     switch_debouncer #(debounce_delay) Switch_Debouncer(clk, synchronized_value, debounced_value);
@@ -57,22 +61,22 @@ module keypad_scanner #(parameter row_div_count, column_div_count, debounce_dela
 
     always_comb begin
         case(pressed_value)
-            4'h0: decoded_pressed_value = 4'hf;
-            4'h1: decoded_pressed_value = 4'hb;
-            4'h2: decoded_pressed_value = 4'h0;
-            4'h3: decoded_pressed_value = 4'ha;
-            4'h4: decoded_pressed_value = 4'he;
-            4'h5: decoded_pressed_value = 4'h9;
-            4'h6: decoded_pressed_value = 4'h8;
-            4'h7: decoded_pressed_value = 4'h7;
-            4'h8: decoded_pressed_value = 4'hd;
-            4'h9: decoded_pressed_value = 4'h6;
-            4'ha: decoded_pressed_value = 4'h5;
-            4'hb: decoded_pressed_value = 4'h4;
-            4'hc: decoded_pressed_value = 4'hc;
-            4'hd: decoded_pressed_value = 4'h3;
-            4'he: decoded_pressed_value = 4'h2;
-            4'hf: decoded_pressed_value = 4'h1;
+            4'h0: decoded_pressed_value = 4'h1;
+            4'h1: decoded_pressed_value = 4'h2;
+            4'h2: decoded_pressed_value = 4'h3;
+            4'h3: decoded_pressed_value = 4'hc;
+            4'h4: decoded_pressed_value = 4'h4;
+            4'h5: decoded_pressed_value = 4'h5;
+            4'h6: decoded_pressed_value = 4'h6;
+            4'h7: decoded_pressed_value = 4'hd;
+            4'h8: decoded_pressed_value = 4'h7;
+            4'h9: decoded_pressed_value = 4'h8;
+            4'ha: decoded_pressed_value = 4'h9;
+            4'hb: decoded_pressed_value = 4'he;
+            4'hc: decoded_pressed_value = 4'ha;
+            4'hd: decoded_pressed_value = 4'h0;
+            4'he: decoded_pressed_value = 4'hb;
+            4'hf: decoded_pressed_value = 4'hf;
             default : decoded_pressed_value = 4'b0;
         endcase
     end
